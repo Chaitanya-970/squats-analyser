@@ -67,3 +67,26 @@ From `gym_pose`, launch the existing local environments with:
 Open http://127.0.0.1:8000. The local server provides upload, job status, annotated-video playback/seek, graphs, JSON/CSV/video downloads and a separate raw human-review workspace at `/review/`. It uses the local original checkpoint and a compatible inference environment; use `--device cpu` when CUDA is unavailable. See the application README for setup.
 
 Current engineering checks: 866 tests passed with 3 skips in the full existing-dependency run; 167 relevant tests passed after the final fragment-wording changes. Real local upload/download and desktop/mobile rendering/video-seek checks passed. These results do not establish clinical or general posture accuracy. Feedback observations are model estimates, and unconfirmed fragments are not automatically separate failed repetitions. Higher inference resolution and alternative checkpoints remain experimental rather than default replacements.
+
+## Planned extension: 3D movement comparison
+
+Status: proposed; not implemented. The existing 2D analysis remains the working application.
+
+The next research milestone is to reconstruct estimated 3D skeleton sequences from a user video and a reference squat, align them, and visualize movement differences.
+
+- [ ] Run a bounded reconstruction pilot on one existing video and inspect missing joints, depth ambiguity, and temporal jitter.
+- [ ] Add rotatable skeleton playback synchronized with the source video.
+- [ ] Normalize body scale and facing direction, then align corresponding repetition phases before comparing sequences.
+- [ ] Show joint/angle differences with replay timestamps; describe differences from the reference without treating them as confirmed technique faults.
+- [ ] Evaluate on people and recordings excluded from development, reporting reconstruction failures and comparison coverage.
+
+ST-GCN is a separate possible learning component: it classifies skeleton sequences and does not itself reconstruct 3D poses or animate an avatar. Adapting it to squat-quality categories requires suitable labelled sequences and evaluation on held-out participants. REHAB24-6 and UI-PRMD are candidate datasets; actual annotations, skeleton compatibility, usage terms, and access must be audited before training. Dataset suitability is not yet established by an archive audit.
+
+Research starting points:
+
+- [Original ST-GCN paper (AAAI 2018)](https://arxiv.org/abs/1801.07455)
+- [VideoPose3D research (CVPR 2019)](https://openaccess.thecvf.com/content_CVPR_2019/html/Pavllo_3D_Human_Pose_Estimation_in_Video_With_Temporal_Convolutions_and_CVPR_2019_paper.html)
+- [REHAB24-6 publisher and dataset terms](https://zenodo.org/records/13305826)
+- [UI-PRMD dataset paper](https://doi.org/10.3390/data3010002)
+
+A successful visualization pilot is not evidence of accurate posture correction. Reference choice and estimated 3D errors must be considered when interpreting differences.
