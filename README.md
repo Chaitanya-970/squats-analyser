@@ -70,7 +70,7 @@ Current engineering checks: 866 tests passed with 3 skips in the full existing-d
 
 ## Planned extension: 3D movement comparison
 
-Status: proposed; not implemented. The existing 2D analysis remains the working application.
+Status: the spatial command-line prototype exports estimated 3D joints and compares matched frames. Web visualization and temporal alignment are planned.
 
 The next research milestone is to reconstruct estimated 3D skeleton sequences from a user video and a reference squat, align them, and visualize movement differences.
 
@@ -90,3 +90,20 @@ Research starting points:
 - [UI-PRMD dataset paper](https://doi.org/10.3390/data3010002)
 
 A successful visualization pilot is not evidence of accurate posture correction. Reference choice and estimated 3D errors must be considered when interpreting differences.
+
+The first spatial prototype exports named 3D joints and knee/hip angles from
+video using the existing MediaPipe Pose Landmarker model. From `gym_pose/`,
+in a Python environment with MediaPipe and OpenCV installed:
+
+```powershell
+python -m gym_analyser.spatial_export input.mp4 --model models/mediapipe_pose_full.task --output pose_frames.json --max-frames 300
+```
+
+Each frame has a zero-based index, nominal timestamp, and a `joints` mapping
+from anatomical names to estimated [x, y, z] coordinates. Unavailable joints
+are omitted. Export both clips and pass the `joints` mappings from corresponding
+frames to `gym_analyser.spatial_comparison.compare_poses`. The result gives
+observed and reference interior angles and their signed differences in degrees.
+A null metric means the pair lacks enough usable joints. The caller supplies
+the frame pairing. Coordinates are model estimates, and the export uses nominal
+frame rate for timestamps.

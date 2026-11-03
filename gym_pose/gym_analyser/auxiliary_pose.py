@@ -98,7 +98,7 @@ class MediaPipeLandmarker:
         self._mp = mp; self._last_timestamp = None
         return self
 
-    def detect_rgb(self, frame, timestamp_ms=None):
+    def detect_rgb(self, frame, timestamp_ms=None, *, include_world=False):
         if self._detector is None:
             raise RuntimeError("Use landmarker inside its context")
         shape = getattr(frame, "shape", ())
@@ -124,12 +124,18 @@ class MediaPipeLandmarker:
         poses = [serialize_landmarks(points, width, height) for points in result.pose_landmarks]
         reason = "single_person" if len(poses) == 1 else ("no_person" if not poses else "multiple_people")
         feet = visible_foot_pairs(poses[0], width, height) if len(poses) == 1 else []
-        return {"landmark_schema": "mediapipe33", "measurement_basis": "model_estimate",
+        output = {"landmark_schema": "mediapipe33", "measurement_basis": "model_estimate",
                 "landmark_processing": "guarded_single_person_video" if self.smooth_video else "multi_person_unsmoothed",
                 "guard_person_count": guard_count,
                 "width": width, "height": height, "timestamp_ms": timestamp_ms,
                 "person_count": len(poses), "reason": reason, "poses": poses,
                 "foot_pair_available": feet, "technique_accuracy": "not_validated"}
+        if include_world:
+            output["world_landmarks"] = [
+                [(p.x, p.y, p.z) for p in points]
+                for points in result.pose_world_landmarks
+            ]
+        return output
 
     def __exit__(self, exc_type, exc, traceback):
         # Close both owned native resources even if either close raises.
