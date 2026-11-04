@@ -107,3 +107,8 @@ observed and reference interior angles and their signed differences in degrees.
 A null metric means the pair lacks enough usable joints. The caller supplies
 the frame pairing. Coordinates are model estimates, and the export uses nominal
 frame rate for timestamps.
+
+## Contributing
+
+See the [temporal contributor handoff](gym_pose/CONTRIBUTING.md) for project
+status, the spatial export interface and the fork-and-pull-request workflow.
